@@ -1276,7 +1276,7 @@ function App() {
 
   return (
     <div className="relative" id="top">
-      <TweaksPanel tweaks={tweaks} onChange={setTweaks} />
+      {/* <TweaksPanel tweaks={tweaks} onChange={setTweaks} /> */}
       <NavBar onBook={scrollToBook} />
 
       {/* ===== 诗意三连屏 · 层叠交叉淡入淡出 ===== */}
