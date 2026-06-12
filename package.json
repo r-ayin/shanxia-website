@@ -1,0 +1,7 @@
+{
+  "name": "shanxia-site",
+  "private": true,
+  "scripts": {
+    "build": "node build.mjs"
+  }
+}

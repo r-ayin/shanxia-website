@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WatercolorFX Demo — 流体水彩光标特效</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    font-family: Georgia, "Songti SC", "SimSun", serif;
+    background: #f4efe4;
+  }
+  #fx {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .ui {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #2c2a26;
+    z-index: 10;
+  }
+  .ui h1 {
+    font-size: clamp(28px, 5vw, 56px);
+    font-weight: 400;
+    letter-spacing: .35em;
+    text-indent: .35em;
+    mix-blend-mode: multiply;
+    opacity: .85;
+  }
+  .ui p {
+    margin-top: 18px;
+    font-size: 14px;
+    letter-spacing: .25em;
+    opacity: .55;
+    mix-blend-mode: multiply;
+  }
+  .toolbar {
+    position: fixed;
+    bottom: 28px;
+    left: 0;
+    right: 0;
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    z-index: 20;
+  }
+  .toolbar button {
+    pointer-events: auto;
+    font-family: inherit;
+    font-size: 13px;
+    letter-spacing: .15em;
+    padding: 10px 22px;
+    border: 1px solid rgba(44, 42, 38, .35);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .55);
+    color: #2c2a26;
+    backdrop-filter: blur(4px);
+    transition: background .25s, transform .25s;
+  }
+  .toolbar button:hover { background: rgba(255,255,255,.9); transform: translateY(-2px); }
+  .drop-hint {
+    position: fixed;
+    top: 22px;
+    right: 26px;
+    font-size: 12px;
+    letter-spacing: .12em;
+    color: rgba(44,42,38,.45);
+    z-index: 20;
+    pointer-events: none;
+  }
+  body.dragging::after {
+    content: "松开以替换画作";
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    letter-spacing: .3em;
+    color: #2c2a26;
+    background: rgba(244, 239, 228, .8);
+    z-index: 100;
+  }
+</style>
+</head>
+<body>
+<canvas id="fx"></canvas>
+
+<div class="ui">
+  <h1>墨 色 山 水</h1>
+  <p>移动鼠标晕开画卷 · 点击任意处绽放墨花</p>
+</div>
+
+<div class="toolbar">
+  <button id="btn-clear" data-cursor>清空画面</button>
+  <button id="btn-burst" data-cursor>随机墨花</button>
+  <button id="btn-regen" data-cursor>换一幅画</button>
+</div>
+<div class="drop-hint">拖入图片可替换为你自己的画作</div>
+
+<script src="watercolor-fluid.js"></script>
+<script>
+/* ------------------------------------------------------------------
+ * 程序化生成一幅"水彩山水"作为演示底图（零外部资源，可离线运行）。
+ * 实际项目中把它换成你自己的水彩图片即可：fx.setImage('your.jpg')
+ * ------------------------------------------------------------------ */
+function makePainting (seed) {
+  const W = 1600, H = 1000;
+  const c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const g = c.getContext('2d');
+
+  let s = seed || (Math.random() * 1e6) | 0;
+  function rnd () { s = (s * 9301 + 49297) % 233280; return s / 233280; }
+
+  // 天空
+  const hueA = 195 + rnd() * 40, hueB = 25 + rnd() * 30;
+  const sky = g.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, 'hsl(' + hueA + ', 32%, 84%)');
+  sky.addColorStop(0.55, 'hsl(' + ((hueA + hueB) / 2) + ', 30%, 88%)');
+  sky.addColorStop(1, 'hsl(' + hueB + ', 38%, 90%)');
+  g.fillStyle = sky;
+  g.fillRect(0, 0, W, H);
+
+  // 日 / 月
+  const sunX = W * (0.25 + rnd() * 0.5), sunY = H * (0.2 + rnd() * 0.18);
+  const sun = g.createRadialGradient(sunX, sunY, 8, sunX, sunY, 130);
+  sun.addColorStop(0, 'hsla(' + hueB + ', 80%, 78%, .95)');
+  sun.addColorStop(1, 'hsla(' + hueB + ', 80%, 78%, 0)');
+  g.fillStyle = sun;
+  g.fillRect(0, 0, W, H);
+
+  // 远中近三层山
+  const layers = 4;
+  for (let i = 0; i < layers; i++) {
+    const t = i / (layers - 1);
+    const baseY = H * (0.42 + t * 0.4);
+    const amp = 60 + t * 130;
+    const light = 78 - t * 38;
+    const sat = 18 + t * 14;
+    g.beginPath();
+    g.moveTo(0, H);
+    let y = baseY + (rnd() - 0.5) * 80;
+    for (let x = 0; x <= W; x += 18) {
+      y += (rnd() - 0.5) * amp * 0.22;
+      y = Math.max(baseY - amp, Math.min(baseY + amp * 0.4, y));
+      g.lineTo(x, y);
+    }
+    g.lineTo(W, H);
+    g.closePath();
+    g.fillStyle = 'hsla(' + (hueA - 12 + t * 10) + ', ' + sat + '%, ' + light + '%, .92)';
+    g.fill();
+
+    // 雾带
+    const mist = g.createLinearGradient(0, baseY - 30, 0, baseY + 90);
+    mist.addColorStop(0, 'hsla(' + hueA + ', 20%, 92%, 0)');
+    mist.addColorStop(0.6, 'hsla(' + hueA + ', 20%, 92%, .5)');
+    mist.addColorStop(1, 'hsla(' + hueA + ', 20%, 92%, 0)');
+    g.fillStyle = mist;
+    g.fillRect(0, baseY - 30, W, 130);
+  }
+
+  // 水面倒影
+  const waterY = H * 0.84;
+  const water = g.createLinearGradient(0, waterY, 0, H);
+  water.addColorStop(0, 'hsla(' + hueA + ', 26%, 80%, .85)');
+  water.addColorStop(1, 'hsla(' + hueA + ', 30%, 68%, .9)');
+  g.fillStyle = water;
+  g.fillRect(0, waterY, W, H - waterY);
+  g.globalAlpha = 0.35;
+  for (let i = 0; i < 26; i++) {
+    g.fillStyle = 'hsla(' + hueA + ', 24%, ' + (60 + rnd() * 25) + '%, .5)';
+    const lw = 60 + rnd() * 300;
+    g.fillRect(rnd() * W - lw / 2, waterY + rnd() * (H - waterY), lw, 2 + rnd() * 3);
+  }
+  g.globalAlpha = 1;
+
+  // 孤舟
+  const bx = W * (0.3 + rnd() * 0.4), by = waterY + (H - waterY) * 0.35;
+  g.fillStyle = 'hsla(20, 25%, 22%, .85)';
+  g.beginPath();
+  g.moveTo(bx - 38, by);
+  g.quadraticCurveTo(bx, by + 16, bx + 38, by);
+  g.quadraticCurveTo(bx, by + 6, bx - 38, by);
+  g.fill();
+  g.strokeStyle = 'hsla(20, 25%, 22%, .8)';
+  g.lineWidth = 2.5;
+  g.beginPath();
+  g.moveTo(bx + 6, by - 2);
+  g.lineTo(bx + 14, by - 34);
+  g.stroke();
+
+  // 飞鸟
+  g.strokeStyle = 'hsla(220, 15%, 30%, .6)';
+  g.lineWidth = 2;
+  for (let i = 0; i < 5; i++) {
+    const px = W * (0.5 + rnd() * 0.35), py = H * (0.15 + rnd() * 0.2), r = 7 + rnd() * 6;
+    g.beginPath();
+    g.arc(px - r, py, r, Math.PI * 1.15, Math.PI * 1.85);
+    g.arc(px + r, py, r, Math.PI * 1.15, Math.PI * 1.85);
+    g.stroke();
+  }
+
+  // 纸纹颗粒
+  const img = g.getImageData(0, 0, W, H);
+  const d = img.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const n = (Math.random() - 0.5) * 10;
+    d[i] += n; d[i + 1] += n; d[i + 2] += n;
+  }
+  g.putImageData(img, 0, 0);
+
+  return c;
+}
+
+/* ------------------------------------------------------------------ */
+const fx = WatercolorFX.init({
+  canvas: document.getElementById('fx'),
+  image: makePainting(),
+
+  // 手感参数：照着 davidwhyte.com/experience 的感觉调的，可继续微调
+  SIM_RESOLUTION: 144,
+  DYE_RESOLUTION: 1024,
+  DENSITY_DISSIPATION: 0.5,
+  VELOCITY_DISSIPATION: 1.7,
+  CURL: 6,
+  SPLAT_RADIUS: 0.22,
+  SPLAT_FORCE: 5600,
+  CLICK_SPLATS: 16,
+  PALETTE: ['#2e5d8a', '#4d8a8a', '#7a6aa0', '#b0764f', '#9a4f63'],
+  PAPER: '#f4efe4',
+  CUSTOM_CURSOR: true,
+});
+
+document.getElementById('btn-clear').addEventListener('click', function (e) {
+  e.stopPropagation();
+  fx.clear();
+});
+document.getElementById('btn-burst').addEventListener('click', function (e) {
+  e.stopPropagation();
+  fx.burst(
+    innerWidth * (0.2 + Math.random() * 0.6),
+    innerHeight * (0.2 + Math.random() * 0.6)
+  );
+});
+document.getElementById('btn-regen').addEventListener('click', function (e) {
+  e.stopPropagation();
+  fx.setImage(makePainting());
+});
+
+// 拖入图片替换底图
+addEventListener('dragover', function (e) { e.preventDefault(); document.body.classList.add('dragging'); });
+addEventListener('dragleave', function () { document.body.classList.remove('dragging'); });
+addEventListener('drop', function (e) {
+  e.preventDefault();
+  document.body.classList.remove('dragging');
+  const f = e.dataTransfer.files && e.dataTransfer.files[0];
+  if (f && f.type.indexOf('image') === 0) {
+    const url = URL.createObjectURL(f);
+    fx.setImage(url);
+  }
+});
+</script>
+</body>
+</html>
