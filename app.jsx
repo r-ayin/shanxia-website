@@ -48,18 +48,18 @@ const CATEGORIES = [
 ];
 
 const WORKS = [
-  { id: 'w1', cat: 'portrait', title: '夏末的回声', place: '杭州 · 龙井', url: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80', h: 520 },
-  { id: 'w2', cat: 'wedding', title: '海边的轻誓', place: '青岛 · 鲁迅公园', url: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80', h: 380 },
-  { id: 'w3', cat: 'family', title: '阳台上的下午', place: '上海 · 武康路', url: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1200&q=80', h: 460 },
-  { id: 'w4', cat: 'portrait', title: '透光的人', place: '成都 · 玉林', url: 'https://images.unsplash.com/photo-1502768040783-423da5fd5fa0?auto=format&fit=crop&w=1200&q=80', h: 320 },
-  { id: 'w5', cat: 'doc', title: '街市的呼吸', place: '香港 · 中环', url: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1200&q=80', h: 540 },
-  { id: 'w6', cat: 'wedding', title: '十一月的窗台', place: '苏州 · 平江路', url: 'https://images.unsplash.com/photo-1529636798458-92182e662485?auto=format&fit=crop&w=1200&q=80', h: 420 },
-  { id: 'w7', cat: 'family', title: '一只熊与两只手', place: '北京 · 鼓楼', url: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?auto=format&fit=crop&w=1200&q=80', h: 360 },
-  { id: 'w8', cat: 'portrait', title: '只属于此刻', place: '大理 · 喜洲', url: 'https://images.unsplash.com/photo-1488161628813-04466f872be2?auto=format&fit=crop&w=1200&q=80', h: 500 },
-  { id: 'w9', cat: 'doc', title: '雨后的人行道', place: '东京 · 谷中', url: 'https://images.unsplash.com/photo-1493804714600-6edb1cd93080?auto=format&fit=crop&w=1200&q=80', h: 340 },
-  { id: 'w10', cat: 'family', title: '小手心', place: '杭州 · 良渚', url: 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=1200&q=80', h: 480 },
-  { id: 'w11', cat: 'portrait', title: '风把头发吹乱', place: '青岛 · 八大关', url: 'https://images.unsplash.com/photo-1496440737103-cd596325d314?auto=format&fit=crop&w=1200&q=80', h: 400 },
-  { id: 'w12', cat: 'wedding', title: '愿你被记得', place: '丽江 · 束河', url: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=1200&q=80', h: 560 }
+  { id: 'w1', cat: 'portrait', title: '湿头发和八月', place: '杭州 · 龙井', url: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80', h: 520 },
+  { id: 'w2', cat: 'wedding', title: '他说完了，海没说完', place: '青岛 · 鲁迅公园', url: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80', h: 380 },
+  { id: 'w3', cat: 'family', title: '阳台上睡过去的光', place: '上海 · 武康路', url: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1200&q=80', h: 460 },
+  { id: 'w4', cat: 'portrait', title: '逆光里她没躲', place: '成都 · 玉林', url: 'https://images.unsplash.com/photo-1502768040783-423da5fd5fa0?auto=format&fit=crop&w=1200&q=80', h: 320 },
+  { id: 'w5', cat: 'doc', title: '菜市场与慢快门', place: '香港 · 中环', url: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&w=1200&q=80', h: 540 },
+  { id: 'w6', cat: 'wedding', title: '三场雨之间的窗台', place: '苏州 · 平江路', url: 'https://images.unsplash.com/photo-1529636798458-92182e662485?auto=format&fit=crop&w=1200&q=80', h: 420 },
+  { id: 'w7', cat: 'family', title: '她抱着熊不肯松手', place: '北京 · 鼓楼', url: 'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?auto=format&fit=crop&w=1200&q=80', h: 360 },
+  { id: 'w8', cat: 'portrait', title: '第一面，最后一张', place: '大理 · 喜洲', url: 'https://images.unsplash.com/photo-1488161628813-04466f872be2?auto=format&fit=crop&w=1200&q=80', h: 500 },
+  { id: 'w9', cat: 'doc', title: '湿鞋子，不想走', place: '东京 · 谷中', url: 'https://images.unsplash.com/photo-1493804714600-6edb1cd93080?auto=format&fit=crop&w=1200&q=80', h: 340 },
+  { id: 'w10', cat: 'family', title: '刚学会握拳的手', place: '杭州 · 良渚', url: 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=1200&q=80', h: 480 },
+  { id: 'w11', cat: 'portrait', title: '风比她先动了', place: '青岛 · 八大关', url: 'https://images.unsplash.com/photo-1496440737103-cd596325d314?auto=format&fit=crop&w=1200&q=80', h: 400 },
+  { id: 'w12', cat: 'wedding', title: '领证前一天的脸', place: '丽江 · 束河', url: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=1200&q=80', h: 560 }
 ];
 
 const BEFORE_AFTER = [
@@ -680,11 +680,7 @@ function WorksSection() {
       <div className="biz-inner">
         <div className={`biz-reveal ${visible ? 'visible' : ''}`}>
           <div className="biz-eyebrow">—  作品 · PORTFOLIO  —</div>
-          <h2 className="biz-title">每一帧，都是<em>一次未竟的相遇</em></h2>
-          <p className="biz-lede">
-            我不挑场景，我等光。不导演表情，我等一个真正出现的你。
-            以下是 2023–2026 三年里，那些被光选中的瞬间。
-          </p>
+          <h2 className="biz-title">我留住<em>地上的星星</em></h2>
         </div>
         <div className="filter-bar">
           {CATEGORIES.map(c => (
@@ -753,13 +749,9 @@ function ProofSection() {
       <div className="biz-inner">
         <div className={`biz-reveal ${visible ? 'visible' : ''}`}>
           <div className="biz-eyebrow">—  原片对比 · RAW × FINAL  —</div>
-          <h2 className="biz-title">没有重度修图，<em>只有耐心等光</em></h2>
-          <p className="biz-lede">
-            把分隔线左右拖动，看一张照片从「记录」到「记得」的距离。
-            我不做液化，不做磨皮 ≥ 30%，让你的脸还是你的脸。
-          </p>
+          <h2 className="biz-title">想要更真实的被看到</h2>
         </div>
-        <div className="ba-stack" style={{ marginTop: 40 }}>
+        <div className="ba-stack" style={{ marginTop: 72 }}>
           {BEFORE_AFTER.map((item, i) => (
             <BeforeAfter key={i} item={item} />
           ))}
@@ -784,7 +776,7 @@ function AboutSection() {
           </div>
           <div className={`biz-reveal ${visible ? 'visible' : ''}`} style={{ transitionDelay: '120ms' }}>
             <div className="biz-eyebrow">—  关于山夏 · ABOUT  —</div>
-            <h2 className="biz-title">我拍人，<em>也拍人和时间的关系</em></h2>
+            <h2 className="biz-title">我拍你，<em>也拍下时间的痕迹。</em></h2>
             <p className="biz-lede" style={{ marginBottom: 18 }}>
               独立摄影师 · 现居杭州。八年前从美院油画系转身，把笔换成了镜头。
             </p>
@@ -1007,8 +999,8 @@ function BookSection() {
             <h4>你会收到的三件套</h4>
             <ul>
               <li><span className="ic">壹</span><span>一份「拍摄前问卷」——帮我先认识你</span></li>
-              <li><span className="ic">贰</span><span>一份手写的拍摄日程表，含光线说明与备选场地</span></li>
-              <li><span className="ic">叁</span><span>成片 + 一封冲洗好的实体照片（含明信片）</span></li>
+              <li><span className="ic">贰</span><span>一份拍摄日程表，含光线说明与备选场地</span></li>
+              <li><span className="ic">叁</span><span>一封明信片或拍立得（可选用自己照片打印）</span></li>
             </ul>
             <div className="book-meta" style={{ marginBottom: 10 }}>常驻 · 杭州</div>
             <div className="book-meta" style={{ marginBottom: 10 }}>足迹 · 上海 · 苏州 · 大理 · 青岛 · 京都</div>
@@ -1065,97 +1057,6 @@ function BizFooter() {
   );
 }
 
-/* === LOADING（保留诗意：私人灵感档案） === */
-function LoadingSection() {
-  const [ref, visible] = useReveal();
-  const [pct, setPct] = useState(0);
-  useEffect(() => {
-    let raf = null;
-    function onScroll() {
-      if (raf) return;
-      raf = requestAnimationFrame(() => {
-        raf = null;
-        const el = ref.current;
-        if (!el) return;
-        const r = el.getBoundingClientRect();
-        if (r.bottom < 0 || r.top > window.innerHeight) return;
-        const total = r.height + window.innerHeight * 0.6;
-        const passed = Math.min(Math.max(window.innerHeight - r.top, 0), total);
-        setPct(Math.max(0, Math.min(100, Math.round((passed / total) * 100))));
-      });
-    }
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => { window.removeEventListener('scroll', onScroll); if (raf) cancelAnimationFrame(raf); };
-  }, []);
-
-  return (
-    <section
-      id="archive"
-      ref={ref}
-      style={{
-        padding: 'clamp(60px, 10vw, 140px) clamp(28px, 4vw, 56px)',
-        borderTop: '1px solid var(--ink-line)',
-        background: 'var(--bg-base)'
-      }}
-    >
-      <div className={`fade-in ${visible ? 'visible' : ''}`} style={{ maxWidth: 880, margin: '0 auto', textAlign: 'center' }}>
-        <div className="chapter-tag mb-6" style={{ color: 'var(--ink-faded)' }}>
-          <span className="loading-dot">●</span>&nbsp;&nbsp;LOADING&nbsp;·&nbsp;加载中
-        </div>
-        <h3 className="serif-display" style={{
-          fontSize: 'clamp(40px, 6vw, 88px)',
-          lineHeight: 1.05,
-          margin: '0 0 22px',
-          letterSpacing: '-0.01em',
-          fontStyle: 'italic',
-          fontWeight: 400
-        }}>
-          私人灵感档案
-        </h3>
-        <p style={{ fontSize: 'clamp(15px, 1.2vw, 18px)', color: 'var(--ink-secondary)', maxWidth: 620, margin: '0 auto', lineHeight: 1.9 }}>
-          进入你的作品档案，探索文字、影像、声音与地图体验。
-          <br/>每一个角落都为一种感官而设，每一种感官都通往同一个房间。
-        </p>
-
-        <div className="mt-12 mx-auto" style={{ maxWidth: 520 }}>
-          <div style={{ height: 1, background: 'var(--ink-line)', position: 'relative', overflow: 'hidden' }}>
-            <div style={{
-              position: 'absolute', left: 0, top: 0, bottom: 0,
-              width: `${pct}%`,
-              background: 'var(--accent)',
-              transition: 'width 0.4s ease'
-            }} />
-          </div>
-          <div className="flex justify-between mt-3 chapter-tag" style={{ color: 'var(--ink-faded)' }}>
-            <span>0%</span>
-            <span style={{ color: 'var(--accent)' }}>{pct}% — 正在装订</span>
-            <span>100%</span>
-          </div>
-        </div>
-
-        <div className="mt-14 grid grid-cols-2 md:grid-cols-4 gap-5" style={{ maxWidth: 720, margin: '56px auto 0' }}>
-          {[
-            ['文字', '札 · 记 · 句'],
-            ['影像', '帧 · 流 · 光'],
-            ['声音', '声 · 息 · 现'],
-            ['地图', '地 · 路 · 痕']
-          ].map(([name, sub], i) => (
-            <div key={i} style={{
-              padding: '20px 12px',
-              border: '1px solid var(--ink-line)',
-              background: 'var(--bg-deep)'
-            }}>
-              <div className="serif-display" style={{ fontSize: 22, fontStyle: 'italic' }}>{name}</div>
-              <div className="chapter-tag mt-2" style={{ color: 'var(--ink-faded)', fontSize: 9 }}>{sub}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 /* === PERKS === */
 function PerksSection() {
   const [ref, visible] = useReveal();
@@ -1172,7 +1073,7 @@ function PerksSection() {
       <div style={{ maxWidth: 1240, margin: '0 auto' }}>
         <header className={`fade-in ${visible ? 'visible' : ''}`} style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 32, alignItems: 'end', marginBottom: 'clamp(40px, 6vw, 80px)' }}>
           <div style={{ gridColumn: 'span 12' }} className="md:col-span-7">
-            <div className="chapter-tag mb-4" style={{ color: 'var(--accent)' }}>—  订阅 · SUBSCRIBE  —</div>
+            <div className="biz-eyebrow">—  订阅 · SUBSCRIBE  —</div>
             <h2 className="serif-display" style={{
               fontSize: 'clamp(36px, 5.4vw, 76px)',
               lineHeight: 1.05,
@@ -1281,9 +1182,6 @@ function App() {
 
       {/* ===== 诗意三连屏 · 层叠交叉淡入淡出 ===== */}
       <StoryStack photos={photos} onReplace={replacePhoto} />
-
-      {/* ===== 私人灵感档案(过渡屏) ===== */}
-      <LoadingSection />
 
       {/* ===== 摄影业务模块 ===== */}
       <WorksSection />
