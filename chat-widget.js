@@ -1,6 +1,6 @@
 /**
- * 山夏摄影 — AI 咨询聊天组件
- * 零依赖 · 香草 JS · 匹配网站美学
+ * 山夏摄影 — AI 咨询聊天组件 v3
+ * 并发控制：最多 3 人同时聊，满员显示「AI 离线」
  */
 (function () {
   if (window.__shanxiaChatLoaded) return;
@@ -8,7 +8,6 @@
 
   // ===== 配置 =====
   const WORKER_URL = 'https://shanxia-chat.womenhaiyouxiwang.workers.dev';
-  // 共享鉴权 token — 防止非网站来源滥用 Worker
   const CHAT_TOKEN='b6227973c87099bb34cdb9848ff1300cd78b2ed327bab0b7';
   const PLACEHOLDER = '想拍什么风格？我帮你参谋～';
   const GREETING = `你好呀～我是山夏的AI小助理 🌸
@@ -16,6 +15,9 @@
 在给你推荐方案之前，我可以先跟你聊几分钟——帮你搞清楚自己最适合什么风格、什么感觉。
 
 你要不要试试看？不想做也没关系，我们直接聊方案也行～`;
+
+  // 会话 ID（每次打开聊天生成新的）
+  let sessionId = '';
 
   // ===== DOM =====
   const style = document.createElement('style');
@@ -29,16 +31,15 @@
       letter-spacing: 0.12em;
       box-shadow: 0 14px 40px -10px rgba(139, 58, 31, 0.55);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
-      border-radius: 4px;
-      display: flex; align-items: center; gap: 8px;
+      border-radius: 4px; display: flex; align-items: center; gap: 8px;
     }
     .sx-chat-trigger:hover { transform: translateY(-3px); box-shadow: 0 20px 50px -12px rgba(139, 58, 31, 0.7); }
     .sx-chat-trigger .sx-dot {
       width: 8px; height: 8px; border-radius: 50%;
-      background: #4ade80;
+      background: #4ade80; flex-shrink: 0;
       animation: sx-pulse 2s ease-in-out infinite;
-      flex-shrink: 0;
     }
+    .sx-chat-trigger .sx-dot.offline { background: #94a3b8; animation: none; }
     @keyframes sx-pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
     .sx-chat-panel {
       position: fixed; bottom: 84px; right: 24px; z-index: 9997;
@@ -74,6 +75,11 @@
     }
     .sx-msg.agent { align-self: flex-start; background: var(--bg-deep); color: var(--ink-primary); border: 1px solid var(--ink-line); }
     .sx-msg.user { align-self: flex-end; background: var(--accent); color: #fbf6ea; }
+    .sx-msg.offline {
+      align-self: center; text-align: center; padding: 24px 20px;
+      color: var(--ink-faded); font-style: italic; font-size: 13px;
+    }
+    .sx-msg.offline .emoji { font-size: 28px; display: block; margin-bottom: 10px; font-style: normal; }
     .sx-chat-input {
       padding: 12px 18px; border-top: 1px solid var(--ink-line);
       display: flex; gap: 10px; flex-shrink: 0; background: var(--bg-base);
@@ -109,9 +115,12 @@
   let open = false;
   let messages = [];
   let streaming = false;
+  let isOffline = false;
 
   function render() {
+    const offlineDot = isOffline ? 'offline' : '';
     const cm = messages.map((m, i) => {
+      if (m.role === 'offline') return `<div class="sx-msg offline" id="sx-msg-${i}"><span class="emoji">💤</span>${escapeHtml(m.content)}</div>`;
       if (m.role === 'agent') return `<div class="sx-msg agent" id="sx-msg-${i}">${escapeHtml(m.content)}</div>`;
       if (m.role === 'user') return `<div class="sx-msg user">${escapeHtml(m.content)}</div>`;
       return '';
@@ -119,7 +128,7 @@
 
     root.innerHTML = `
       <button class="sx-chat-trigger" id="sx-trigger" aria-label="与山夏聊天">
-        <span class="sx-dot"></span>${open ? '关闭' : 'AI咨询定制'}
+        <span class="sx-dot ${offlineDot}"></span>${open ? '关闭' : 'AI咨询定制'}
       </button>
       <div class="sx-chat-panel ${open ? '' : 'hidden'}" id="sx-panel">
         <div class="sx-chat-header">
@@ -128,22 +137,38 @@
         </div>
         <div class="sx-chat-body" id="sx-body">${cm}</div>
         <div class="sx-chat-input">
-          <input id="sx-input" type="text" placeholder="${PLACEHOLDER}" maxlength="500" />
-          <button id="sx-send" ${streaming ? 'disabled' : ''}>发送</button>
+          <input id="sx-input" type="text" placeholder="${isOffline ? 'AI 小助理离线中…' : PLACEHOLDER}" maxlength="500" ${isOffline ? 'disabled' : ''} />
+          <button id="sx-send" ${streaming || isOffline ? 'disabled' : ''}>发送</button>
         </div>
       </div>
     `;
 
     document.getElementById('sx-trigger').addEventListener('click', toggle);
-    document.getElementById('sx-close').addEventListener('click', () => { open = false; render(); });
+    document.getElementById('sx-close').addEventListener('click', closePanel);
     const input = document.getElementById('sx-input');
-    input.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
-    document.getElementById('sx-send').addEventListener('click', send);
-    if (open) setTimeout(() => input.focus(), 100);
+    if (!isOffline) {
+      input.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
+      document.getElementById('sx-send').addEventListener('click', send);
+    }
+    if (open && !isOffline) setTimeout(() => input.focus(), 100);
     scrollBody();
   }
 
-  function toggle() { open = !open; render(); }
+  function toggle() {
+    open = !open;
+    if (open) {
+      sessionId = 'sx-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+    }
+    render();
+  }
+
+  function closePanel() {
+    open = false;
+    // 会话 ID 随关闭失效，下次打开生成新的
+    sessionId = '';
+    isOffline = false;
+    render();
+  }
 
   function escapeHtml(s) {
     const d = document.createElement('div');
@@ -166,7 +191,7 @@
   }
 
   async function send() {
-    if (streaming) return;
+    if (streaming || isOffline) return;
     const input = document.getElementById('sx-input');
     if (!input) return;
     const text = input.value.trim();
@@ -182,7 +207,7 @@
     streaming = true;
 
     const apiMessages = messages
-      .filter(m => m.role !== 'typing')
+      .filter(m => m.role !== 'typing' && m.role !== 'offline')
       .map(m => ({ role: m.role === 'agent' ? 'assistant' : 'user', content: m.content }));
 
     try {
@@ -190,10 +215,26 @@
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Chat-Token': CHAT_TOKEN
+          'X-Chat-Token': CHAT_TOKEN,
+          'X-Session-Id': sessionId
         },
         body: JSON.stringify({ messages: apiMessages })
       });
+
+      // 并发满 → 显示离线
+      if (resp.status === 503) {
+        let msg = 'AI 小助理正在跟别人聊天，暂时离线～\n稍等一下就好，或者直接加山夏微信：shanyue523478';
+        try {
+          const body = await resp.json();
+          if (body.message) msg = body.message;
+        } catch {}
+        // 移除空的 agent 消息
+        messages.splice(agentIdx, 1);
+        messages.push({ role: 'offline', content: msg });
+        isOffline = true;
+        render();
+        return;
+      }
 
       if (!resp.ok) {
         messages[agentIdx].content = '抱歉，我暂时连不上～ 要不直接加山夏微信 shanyue523478 聊？';
@@ -201,6 +242,7 @@
         return;
       }
 
+      isOffline = false;
       const reader = resp.body.getReader();
       const decoder = new TextDecoder();
       let full = '';
@@ -227,14 +269,14 @@
       }
     } catch (e) {
       console.error('Chat error:', e);
-      if (!messages[agentIdx].content) {
-        messages[agentIdx].content = '抱歉，我暂时连不上～ 要不直接加山夏微信 shanyue523478 聊？';
+      if (!messages[agentIdx] || !messages[agentIdx].content) {
+        messages[agentIdx] = { role: 'agent', content: '抱歉，我暂时连不上～ 要不直接加山夏微信 shanyue523478 聊？' };
       }
     } finally {
       streaming = false;
       const inp = document.getElementById('sx-input');
       const btn = document.getElementById('sx-send');
-      if (inp) { inp.disabled = false; inp.focus(); }
+      if (inp && !isOffline) { inp.disabled = false; inp.focus(); }
       if (btn) btn.disabled = false;
       render();
     }
