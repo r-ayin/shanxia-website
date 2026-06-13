@@ -1,3 +1,8 @@
 name = "shanxia-chat"
 main = "chat-worker.js"
 compatibility_date = "2026-06-13"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "shanxia-chat-db"
+database_id = "8494728e-1af0-4eed-86bd-ff1a95464c9a"
