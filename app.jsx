@@ -1197,7 +1197,6 @@ function App() {
       <PerksSection />
 
       <BizFooter />
-      <button className="float-cta" onClick={scrollToBook}>预约一次拍摄 →</button>
       <div className="scroll-cue">SCROLL — 沿章而下</div>
     </div>
   );

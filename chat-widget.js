@@ -1,7 +1,6 @@
 /**
  * 山夏摄影 — AI 咨询聊天组件
  * 零依赖 · 香草 JS · 匹配网站美学
- * 加载方式：<script defer src="./chat-widget.js"></script>
  */
 (function () {
   if (window.__shanxiaChatLoaded) return;
@@ -9,7 +8,8 @@
 
   // ===== 配置 =====
   const WORKER_URL = 'https://shanxia-chat.womenhaiyouxiwang.workers.dev';
-  const BRAND = '山夏';
+  // 共享鉴权 token — 防止非网站来源滥用 Worker
+  const CHAT_TOKEN='b6227973c87099bb34cdb9848ff1300cd78b2ed327bab0b7';
   const PLACEHOLDER = '想拍什么风格？我帮你参谋～';
   const GREETING = `你好呀～我是山夏的AI小助理 🌸
 
@@ -22,25 +22,27 @@
   style.textContent = `
     .sx-chat-trigger {
       position: fixed; bottom: 28px; right: 24px; z-index: 9998;
-      width: 52px; height: 52px; border-radius: 50%;
+      padding: 12px 20px;
       background: var(--accent); color: #fbf6ea;
       border: none; cursor: pointer;
-      font-size: 22px; display: flex; align-items: center; justify-content: center;
+      font-family: var(--serif-body); font-size: 14px;
+      letter-spacing: 0.12em;
       box-shadow: 0 14px 40px -10px rgba(139, 58, 31, 0.55);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
-      font-family: var(--serif-display);
+      border-radius: 4px;
+      display: flex; align-items: center; gap: 8px;
     }
     .sx-chat-trigger:hover { transform: translateY(-3px); box-shadow: 0 20px 50px -12px rgba(139, 58, 31, 0.7); }
-    .sx-chat-trigger .dot {
-      position: absolute; top: 2px; right: 2px;
-      width: 10px; height: 10px; border-radius: 50%;
-      background: #4ade80; border: 2px solid var(--accent);
-      animation: pulse-dot 2s ease-in-out infinite;
+    .sx-chat-trigger .sx-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #4ade80;
+      animation: sx-pulse 2s ease-in-out infinite;
+      flex-shrink: 0;
     }
-    @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.5} }
+    @keyframes sx-pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
     .sx-chat-panel {
-      position: fixed; bottom: 96px; right: 24px; z-index: 9997;
-      width: 380px; max-width: calc(100vw - 40px); height: 560px; max-height: calc(100vh - 140px);
+      position: fixed; bottom: 84px; right: 24px; z-index: 9997;
+      width: 380px; max-width: calc(100vw - 40px); height: 520px; max-height: calc(100vh - 140px);
       background: var(--bg-base); border: 1px solid var(--ink-line);
       border-radius: 8px; display: flex; flex-direction: column;
       box-shadow: 0 24px 60px -16px rgba(26, 22, 18, 0.3);
@@ -72,7 +74,6 @@
     }
     .sx-msg.agent { align-self: flex-start; background: var(--bg-deep); color: var(--ink-primary); border: 1px solid var(--ink-line); }
     .sx-msg.user { align-self: flex-end; background: var(--accent); color: #fbf6ea; }
-    .sx-msg.typing { align-self: flex-start; color: var(--ink-faded); font-style: italic; font-size: 12px; }
     .sx-chat-input {
       padding: 12px 18px; border-top: 1px solid var(--ink-line);
       display: flex; gap: 10px; flex-shrink: 0; background: var(--bg-base);
@@ -95,8 +96,8 @@
     .sx-chat-input button:hover { background: var(--accent); }
     .sx-chat-input button:disabled { opacity: 0.4; cursor: default; }
     @media (max-width: 480px) {
-      .sx-chat-panel { width: calc(100vw - 32px); right: 16px; bottom: 80px; height: 480px; }
-      .sx-chat-trigger { right: 16px; bottom: 20px; }
+      .sx-chat-panel { width: calc(100vw - 32px); right: 16px; bottom: 80px; height: 440px; }
+      .sx-chat-trigger { right: 16px; bottom: 20px; padding: 10px 16px; font-size: 13px; }
     }
   `;
   document.head.appendChild(style);
@@ -118,7 +119,7 @@
 
     root.innerHTML = `
       <button class="sx-chat-trigger" id="sx-trigger" aria-label="与山夏聊天">
-        ${open ? '✕' : '?'}<span class="dot"></span>
+        <span class="sx-dot"></span>${open ? '关闭' : 'AI咨询定制'}
       </button>
       <div class="sx-chat-panel ${open ? '' : 'hidden'}" id="sx-panel">
         <div class="sx-chat-header">
@@ -187,14 +188,17 @@
     try {
       const resp = await fetch(WORKER_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Chat-Token': CHAT_TOKEN
+        },
         body: JSON.stringify({ messages: apiMessages })
       });
 
       if (!resp.ok) {
-        const err = await resp.text();
         messages[agentIdx].content = '抱歉，我暂时连不上～ 要不直接加山夏微信 shanyue523478 聊？';
-        throw new Error(err);
+        render();
+        return;
       }
 
       const reader = resp.body.getReader();
@@ -205,7 +209,6 @@
         const { done, value } = await reader.read();
         if (done) break;
         const chunk = decoder.decode(value, { stream: true });
-        // SSE format: data: {...}
         const lines = chunk.split('\n');
         for (const line of lines) {
           if (line.startsWith('data: ')) {
@@ -237,6 +240,5 @@
     }
   }
 
-  // Init
   render();
 })();
