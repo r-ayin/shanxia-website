@@ -85,11 +85,28 @@ const BEFORE_AFTER = [
 
 const PACKAGES = [
   {
+    id: 'hourly',
+    name: '按小时 · 随心起拍',
+    price: '¥ 399 — 499',
+    unit: '/ 小时起',
+    duration: '1 小时起 · 灵活预约',
+    cover: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1200&q=80',
+    timeline: [
+      ['学生', '¥ 399 / 小时（需验证学生身份）'],
+      ['标准', '¥ 499 / 小时'],
+      ['2小时', '可拍 1-2 个场景，30-40 张精修'],
+      ['加时', '按小时叠加，无上限']
+    ],
+    delivery: '精修片 7-14 个工作日 · 原片 3 个工作日',
+    bestFor: '个人写真 · 情侣 · 闺蜜 · 试拍体验',
+    note: '学生价享 8 折优惠'
+  },
+  {
     id: 'half',
     name: '一个下午的故事',
-    price: '¥ 3,800',
+    price: '¥ 1,300',
     unit: '起',
-    duration: '约 3 小时',
+    duration: '约 4 小时',
     cover: 'https://images.unsplash.com/photo-1509223197845-458d87318791?auto=format&fit=crop&w=1200&q=80',
     timeline: [
       ['14:00', '见面聊天，让镜头先认识你'],
@@ -97,13 +114,13 @@ const PACKAGES = [
       ['16:00', '换第二套造型'],
       ['17:30', '抓住黄金时刻最后一组']
     ],
-    delivery: '7 天内交付 60 张精修',
+    delivery: '7-14 个工作日内交付精修片 · 原片 3 个工作日',
     bestFor: '个人写真 · 闺蜜 · 情侣日常'
   },
   {
     id: 'full',
     name: '一整天的电影',
-    price: '¥ 6,800',
+    price: '¥ 3,000',
     unit: '起',
     duration: '约 8 小时',
     cover: 'https://images.unsplash.com/photo-1525258946800-98cfd641d0de?auto=format&fit=crop&w=1200&q=80',
@@ -114,24 +131,9 @@ const PACKAGES = [
       ['17:00', '黄昏外景'],
       ['19:00', '夜色街灯下的最后一组']
     ],
-    delivery: '14 天内交付 120 张精修 + 短片',
+    delivery: '7-14 个工作日内交付精修片 + 短片',
     bestFor: '婚纱 · 求婚纪念 · 重要节日',
     recommended: true
-  },
-  {
-    id: 'family',
-    name: '家庭的一小时',
-    price: '¥ 1,980',
-    unit: '起',
-    duration: '约 1 小时',
-    cover: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=1200&q=80',
-    timeline: [
-      ['到访', '十分钟熟悉，孩子先玩自己的'],
-      ['抓拍', '不喊"看镜头"，等他自己看过来'],
-      ['合照', '最后五分钟，留一张正式合影']
-    ],
-    delivery: '5 天内交付 30 张精修',
-    bestFor: '亲子 · 周岁 · 三代同堂'
   }
 ];
 
