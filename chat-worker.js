@@ -144,6 +144,12 @@ export default {
       return json({ error: 'Invalid JSON' }, 400, corsOrigin);
     }
 
+    // === 断开信号：立即释放槽位 ===
+    if (body.action === 'disconnect' && body.sessionId) {
+      sessions.delete(body.sessionId);
+      return json({ ok: true, active: sessions.size }, 200, corsOrigin);
+    }
+
     // === 并发控制 ===
     const sessionId = request.headers.get('X-Session-Id') || '';
     const now = Date.now();

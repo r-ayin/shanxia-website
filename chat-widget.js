@@ -155,6 +155,7 @@
   }
 
   function toggle() {
+    if (open) disconnect();  // 关闭前释放槽位
     open = !open;
     if (open) {
       sessionId = 'sx-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
@@ -163,12 +164,33 @@
   }
 
   function closePanel() {
+    disconnect();
     open = false;
-    // 会话 ID 随关闭失效，下次打开生成新的
     sessionId = '';
     isOffline = false;
     render();
   }
+
+  // 通知 Worker 释放槽位
+  function disconnect() {
+    if (!sessionId) return;
+    const sid = sessionId;
+    sessionId = '';
+    navigator.sendBeacon(WORKER_URL, JSON.stringify({
+      action: 'disconnect',
+      sessionId: sid
+    }));
+  }
+
+  // 关闭标签页也释放
+  window.addEventListener('beforeunload', () => {
+    if (sessionId) {
+      navigator.sendBeacon(WORKER_URL, JSON.stringify({
+        action: 'disconnect',
+        sessionId: sessionId
+      }));
+    }
+  });
 
   function escapeHtml(s) {
     const d = document.createElement('div');
